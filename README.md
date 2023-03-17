@@ -350,7 +350,9 @@ No errors and warnings! great!
 Lets see if the web-app is reachable:
 
 http://localhost:8080/xnat  
+
 or
+
 http://[your-server-address]/:8080/xnat
 
 Use the default admin:admin login to start the XNAT configuration!
