@@ -32,7 +32,7 @@ sudo add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
 sudo apt update
 sudo apt --yes install adoptopenjdk-8-hotspot
 ```
-Java is then located in: 
+Java is then located at: 
 
 ```bash
 /usr/lib/jvm/adoptopenjdk-8-hotspot-amd64
@@ -41,7 +41,7 @@ Java is then located in:
   2) Apache Tomcat 8.5 or 9.0 (recommended; 7.0 supported but requires special configuration)
 
 Here I installed __Tomcat 9.__ The Installation and configuration is based on the following website: https://linuxize.com/post/how-to-install-tomcat-9-on-debian-10/
-Skip the java part in the description of the link, we already have java-8 installed.
+Skip the java part in the description, we already have java-8 installed.
 
 Create a Tomcat user:
 ```basch
@@ -54,7 +54,204 @@ wget https://www-eu.apache.org/dist/tomcat/tomcat-9/v9.0.73/bin/apache-tomcat-9.
 ```
 (ver. 9.0.27 as describebed in the link above isn´t available, so use Ver. 9.0.73 instead)
 
+Then extract the file and move it to ```/opt/tomcat```:
+
+```bash 
+tar -xf apache-tomcat-9.0.73.tar.gz
+```
+I also renamed the file because i don´t like "*.*" in folder- or filenames:
+```basch
+sudo mv apache-tomcat-9.0.73 /opt/tomcat/apache-tomcat-9073
+```
+
+In the next steps we are going to configure the tomcat service. Therefore we have to define a few folder-paths. In case we are switching the tomcat version later, it is better to wor with a fixed folder name. Therfore we are using a symbolic-link:
+
+```bash
+sudo ln -s /opt/tomcat/apache-tomcat-9073 /opt/tomcat/latest
+```
+
+In case of updating Tomcat to a newer version we just have to change the link ```/opt/tomcat/latest``` to the new version.
+
+Now we are changing the ownership of ```/opt/tomcat``` and make the ```**/bin/*.sh``` files executable.
+Here we are using our xnat user not the tomcat user. Yes we generated this at the beginning, but we will no longer use it.
+
+```bash
+sudo chown -R xnat: /opt/tomcat
+sudo sh -c 'chmod +x /opt/tomcat/latest/bin/*.sh'
+```
+
+OK, let´s configure tomcat! Therefore we have to generate a ```tomcat.service``` file in ```/etc/systemd/system```.
+I do ist with nano directly in the terminal:
+
+```bash
+sudo nano /etc/systemd/system/tomcat.service
+````
+
+Use the following definitions:
+
+```service 
+[Unit]
+Description=Tomcat 9.0 servlet container
+After=network.target
+
+[Service]
+Type=forking
+
+User=xnat
+Group=xnat
+
+PrivateTmp=yes
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+NoNewPrivileges=true
+CacheDirectory=tomcat9
+CacheDirectoryMode=750
+ProtectSystem=strict
+
+ReadWritePaths=/opt/tomcat/latest/conf/Catalina/
+ReadWritePaths=/opt/tomcat/latest/webapps/
+ReadWritePaths=/opt/tomcat/latest/logs/
+ReadWritePaths=/opt/tomcat/latest/temp/
+ReadWritePaths=/opt/tomcat/latest/work/Catalina/localhost/
+ReadWritePaths=/data/xnat/
+
+Environment="JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64"
+Environment="JAVA_JRE=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64/jre"
+Environment="JAVA_OPTS=-Djava.security.egd=file:///dev/urandom"
+Environment="CATALINA_BASE=/opt/tomcat/latest"
+Environment="CATALINA_HOME=/opt/tomcat/latest"
+Environment="CATALINA_PID=/opt/tomcat/latest/temp/tomcat.pid"
+Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC -Dxnat.home=/data/xnat/home"
+
+ExecStart=/opt/tomcat/latest/bin/startup.sh
+ExecStop=/opt/tomcat/latest/bin/shutdown.sh
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Note:
+Here you see why the use of a symbolic link is a good idea because when you change tomcat. you don´t have to change the service definition. Two more things: You have to change the ```JAVA_HOME and JAVA_JRE``` to the above generated java-8 path. And we defined the xnat home directory in ```CATALINA_OPTS``` we don´t generated the home directories in ```/data/xnat/``` yet. We will do ist later! 
+
+Every time we change the service file we have to reload it:
+(Stop tomcat before if it is running: ```sudo systemctl start tomcat``` )
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl start tomcat
+```
+Check:
+
+```bash
+sudo systemctl status tomcat
+```
+
+If no errors (maybe at this stage there is an error or warning b.c. we don´t generate the xnat home directory!), enable autostart at boot time:
+
+```bash
+sudo systemctl enable tomcat
+```
+
+I also defined the tomcat service user as follows (Not sure if it is really necessary):
+I added a file ```tomcat9.conf``` in ```/opt/tomcat/latest/conf```.
+
+```bash
+sudo nano /opt/tomcat/latest/conf/tomcat9.conf
+```
+
+with the following content:
+
+```service
+# Run Tomcat as this user ID. Not setting this or leaving it blank will use the
+# default of tomcat9.
+TOMCAT9_USER=xnat
+
+# Run Tomcat as this group ID. Not setting this or leaving it blank will use
+# the default of tomcat9.
+TOMCAT9_GROUP=xnat
+```
+Note: If you updating tomcat you have to do it again for the new tomcat version!
+
+
+Done.... Thats it with tomcat. 
+
+Here again the basic tomcat actions:
+
+```basch
+sudo systemctl stop tomcat
+sudo systemctl daemon-reload
+sudo systemctl start tomcat
+sudo systemctl status tomcat
+
+sudo systemctl restart tomcat
+```
+
   3) PostgreSQL 10 or later
+  
+Now we will focus to Database installation. We ant use the latest version of PostgreSQL.
+Here I use the descripton you´ll find here: https://linuxize.com/post/how-to-install-postgresql-on-debian-10/
+
+First update the packages:
+
+```bash
+sudo apt update
+```
+
+Then install PostgreQSL:
+
+```bash
+sudo apt install postgresql postgresql-contrib
+```
+
+Last check the version:
+
+```bash
+sudo -u postgres psql -c "SELECT version();"
+```
+
+Done, quick and easy!
+
 
 ## 2) Setting-up PostgreSQL
-      
+
+Now we are starting to configure our XNAT database. Here I go back to the official XNAT-manual. You will find it here: https://wiki.xnat.org/documentation/getting-started-with-xnat/xnat-installation-guide/configuring-postgresql-for-xnat
+
+The steps are:
+
+1: Create XNAT's database user
+
+2: Configuring database access
+
+3: Configuring TCP/IP Listeners -> I don´t do that!
+
+4: (Optional) Managing database access by user and host  -> I don´t do that!
+
+So focus on step 1 and 2:
+
+```bash
+$ sudo su - postgres 
+postgres:postgres$ createuser --createdb xnat
+postgres:postgres$ createdb --owner=xnat xnat;
+postgres:postgres$ psql
+psql (12.6)
+Type "help" for help.
+
+postgres=# \password xnat
+Enter new password:
+Enter it again:
+postgres=# \q
+postgres:~$ logout
+$
+```
+
+Restart PostgreSQL:
+
+```bash
+sudo systemctl restart postgresql
+```
+
+
+
+
+
+
+
