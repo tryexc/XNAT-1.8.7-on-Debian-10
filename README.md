@@ -139,17 +139,6 @@ Every time we change the service file we have to reload it:
 sudo systemctl daemon-reload
 sudo systemctl start tomcat
 ```
-Check:
-
-```bash
-sudo systemctl status tomcat
-```
-
-If no errors (maybe at this stage there is an error or warning b.c. we don´t generate the xnat home directory!), enable autostart at boot time:
-
-```bash
-sudo systemctl enable tomcat
-```
 
 I also defined the tomcat service user as follows (Not sure if it is really necessary):
 I added a file ```tomcat9.conf``` in ```/opt/tomcat/latest/conf```.
@@ -171,7 +160,17 @@ TOMCAT9_GROUP=xnat
 ```
 Note: If you updating tomcat you have to do it again for the new tomcat version!
 
+Check:
 
+```bash
+sudo systemctl status tomcat
+```
+
+If no errors (maybe at this stage there is an error or warning b.c. we don´t generate the xnat home directory!), enable autostart at boot time:
+
+```bash
+sudo systemctl enable tomcat
+```
 Done.... Thats it with tomcat. 
 
 Here again the basic tomcat actions:
@@ -248,6 +247,51 @@ Restart PostgreSQL:
 ```bash
 sudo systemctl restart postgresql
 ```
+
+Puh, that was also no magic!
+
+## 3) Set Up XNAT_HOME and the File System Structure
+
+Now we are generating all necessary folder:
+
+a) XNAT_HOME:
+
+```bash
+sudo mkdir -p /data/xnat/home/config
+sudo mkdir /data/xnat/home/logs
+sudo mkdir /data/xnat/home/plugins
+sudo mkdir /data/xnat/home/work
+````
+
+b) XNAT data:
+
+```bash
+sudo mkdir /data/xnat/archive
+sudo mkdir /data/xnat/build
+sudo mkdir /data/xnat/cache
+sudo mkdir /data/xnat/fileStore
+sudo mkdir /data/xnat/ftp
+sudo mkdir /data/xnat/inbox
+sudo mkdir /data/xnat/prearchive
+```
+
+c) Grant ownership to the Tomcat service user:
+
+```bash
+sudo chown -R xnat:xnat /data
+```
+
+## 4) Configure XNAT for Initial Startup and install Web App
+
+a) Starting with creating a XNAT initial-file in ```/data/xnat/home/config```
+
+
+
+
+
+
+
+
 
 
 
