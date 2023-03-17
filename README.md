@@ -359,7 +359,7 @@ Use the default admin:admin login to start the XNAT configuration!
 
 ## 5) Problems
 
-To figure out what is wrong when something doesn´t works ist to have a lo the logfiles:
+To figure out what is wrong when something doesn´t works is (surprisingly) to have a look the logfiles:
 
 1) __For Tomcat related Problems see:__
 
