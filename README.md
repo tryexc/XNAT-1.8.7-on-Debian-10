@@ -224,7 +224,7 @@ The steps are:
 
 4: (Optional) Managing database access by user and host  -> I don´t do that!
 
-So focus on step 1 and 2:
+__So focus on step 1 and 2:__
 
 ```bash
 $ sudo su - postgres 
@@ -284,6 +284,115 @@ sudo chown -R xnat:xnat /data
 ## 4) Configure XNAT for Initial Startup and install Web App
 
 a) Starting with creating a XNAT initial-file in ```/data/xnat/home/config```
+
+```bash
+sudo nano /data/xnat/home/config/xnat-conf.properties
+```
+Put in all needed infos for the database connection:
+
+```service
+datasource.driver=org.postgresql.Driver
+datasource.url=jdbc:postgresql://localhost/xnat
+datasource.username=xnat
+datasource.password=xnat
+ 
+hibernate.dialect=org.hibernate.dialect.PostgreSQL9Dialect
+hibernate.hbm2ddl.auto=update
+hibernate.show_sql=false
+hibernate.cache.use_second_level_cache=true
+hibernate.cache.use_query_cache=true
+```
+
+b) Install XNAT-web application
+
+Download XNAT-core (ver. 1.8.7): https://api.bitbucket.org/2.0/repositories/xnatdev/xnat-web/downloads/xnat-web-1.8.7.war
+First we have to stop tomcat:
+
+```bash
+sudo systemctl stop tomcat
+```
+
+Then go to your download directory and move the "*.war" file to ```/opt/tomcat/latest/webapps```. Here i also renamed the XNAT "*.war" file to get rid of "." in the filename.
+
+```bash
+cd ~/Downloads
+mv xnat-web-1.8.7.war /opt/tomcat/latest/webapps/xnat.war
+```
+
+Now start tomcat again:
+
+```bash
+sudo systemctl start tomcat
+```
+
+Let´s check if everything the server and web-app comes up!:
+
+```bash
+tail -f /opt/tomcat/latest/logs/catalina.out
+```
+
+The output should look like these:
+
+```service
+17-Mar-2023 10:44:14.870 INFORMATION [main] org.apache.catalina.startup.Catalina.load Server initialization in [4369] milliseconds
+17-Mar-2023 10:44:15.285 INFORMATION [main] org.apache.catalina.core.StandardService.startInternal Starting service [Catalina]
+17-Mar-2023 10:44:15.285 INFORMATION [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet engine: [Apache Tomcat/9.0.73]
+17-Mar-2023 10:44:15.570 INFORMATION [main] org.apache.catalina.startup.HostConfig.deployWAR Deploying web application archive [/opt/tomcat/apache-tomcat-9073/webapps/xnat.war]
+17-Mar-2023 10:44:35.384 INFORMATION [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+SOURCE: /opt/tomcat/apache-tomcat-9073/webapps/xnat/
+Database up to date.
+17-Mar-2023 10:45:23.598 INFORMATION [main] org.apache.catalina.startup.HostConfig.deployWAR Deployment of web application archive [/opt/tomcat/apache-tomcat-9073/webapps/xnat.war] has finished in [68.023] ms
+17-Mar-2023 10:45:23.603 INFORMATION [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8080"]
+17-Mar-2023 10:45:23.641 INFORMATION [main] org.apache.catalina.startup.Catalina.start Server startup in [66877] milliseconds
+```
+No errors and warnings! great!
+
+Lets see if the web-app is reachable:
+
+http://localhost:8080/xnat  
+or
+http://[your-server-address]/:8080/xnat
+
+Use the default admin:admin login to start the XNAT configuration!
+
+## 5) Problems
+
+To figure out what is wrong when something doesn´t works ist to have a lo the logfiles:
+
+1) __For Tomcat related Problems see:__
+
+```bash
+sudo systemctl status tomcat
+```
+and
+
+```bash
+tail -f /opt/tomcat/latest/logs/catalina.out
+```
+Some times it is better to watch the whole file!:
+
+```bash
+gedit /opt/tomcat/latest/logs/catalina.out
+```
+
+2) __Problems with XNAT-web__
+
+Have a look to the filen stored in ```/data/xnat/home/logs```.
+
+3) __Network Problems___
+
+```bash
+gedit /opt/tomcat/latest/logs/localhost.[date].log
+```
+
+
+
+
+
+
+
+
+
 
 
 
