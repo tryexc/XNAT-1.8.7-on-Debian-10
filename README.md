@@ -52,7 +52,7 @@ Download Tomcat:
 cd /tmp
 wget https://www-eu.apache.org/dist/tomcat/tomcat-9/v9.0.73/bin/apache-tomcat-9.0.73.tar.gz
 ```
-(ver. 9.0.27 as describebed in the link above isn´t available, so use Ver. 9.0.73 instead)
+(ver. 9.0.27 as describebed in the link above isn´t available, so use ver. 9.0.73 instead)
 
 Then extract the file and move it to ```/opt/tomcat```:
 
@@ -379,7 +379,7 @@ gedit /opt/tomcat/latest/logs/catalina.out
 
 Have a look to the filen stored in ```/data/xnat/home/logs```.
 
-3) __Network Problems___
+3) __Network Problems__
 
 ```bash
 gedit /opt/tomcat/latest/logs/localhost.[date].log
