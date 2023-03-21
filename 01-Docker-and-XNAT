@@ -1,1 +1,1 @@
-
+The following explains how to use XNAT´s Container-Service with the goal to run automatic pipelines like DICOM to BIDS conversion and the integration of MRI-Data quality assessment with the tool MRI-QC (https://mriqc.readthedocs.io/en/latest).
