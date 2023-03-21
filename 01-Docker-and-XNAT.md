@@ -32,7 +32,7 @@ To install Docker I followed the steps from https://linuxize.com/post/how-to-ins
 >sudo systemctl status docker
 >```
 
-At this stage docker is just executable without sudo. Let´s enroll our xnat user to the docker group. The group "docker" should already exists, if not create one:
+At this stage docker is just executable with sudo. Let´s enroll our xnat user to the docker group. The group "docker" should already exists, if not create one:
 
 ```bash
 sudo groupadd docker
