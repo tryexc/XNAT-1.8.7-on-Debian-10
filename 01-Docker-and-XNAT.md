@@ -63,7 +63,7 @@ cd ~/Downloads
 sudo mv container-service-3.3.0-fat.jar /Data/xnat/home/plugins
 sudo systemctl restart tomcat
 ```
-Now we should be able to pull docker images!
+Now we should be able to pull docker images! Navigate on XNAT web-page to: Administer -> Plugin Settings
 
 ![image](https://user-images.githubusercontent.com/88328518/226909623-ce55e176-6ddf-481d-8485-3f2ff16fff74.png)
 
