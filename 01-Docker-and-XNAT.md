@@ -1,6 +1,6 @@
 The following explains how to use XNAT´s Container-Service with the goal to run automatic pipelines like DICOM to BIDS conversion and the integration of MRI-Data quality assessment with the tool MRI-QC (https://mriqc.readthedocs.io/en/latest).
 
-#__1) Docker-Installation on Debian 10__
+# __1) Docker-Installation on Debian 10__
 
 To install Docker I followed the steps from https://linuxize.com/post/how-to-install-and-use-docker-on-debian-10/
 
@@ -52,8 +52,14 @@ Test:
 docker info
 ```
 
+# __2) Installation of Container PlugIn for XNAT__ 
+
+First download the XNAT-container-PlugIn:
+https://wiki.xnat.org/container-service/container-service-122978848.html
+
+Next copy the "jar" file to the XNAT-Home directory:
+```bash
+mv
 
 
 
-
-#__2) Installation of Container PlugIn for XNAT__ 
