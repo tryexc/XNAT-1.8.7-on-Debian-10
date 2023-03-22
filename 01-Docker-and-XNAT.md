@@ -57,9 +57,15 @@ docker info
 First download the XNAT-container-PlugIn:
 https://wiki.xnat.org/container-service/container-service-122978848.html
 
-Next copy the "jar" file to the XNAT-Home directory:
+Next copy the "jar" file to the XNAT-Home directory and restart tomcat:
 ```bash
-mv
+cd ~/Downloads
+sudo mv container-service-3.3.0-fat.jar /Data/xnat/home/plugins
+sudo systemctl restart tomcat
+```
+Now we should be able to pull docker images!
+
+![image](https://user-images.githubusercontent.com/88328518/226909623-ce55e176-6ddf-481d-8485-3f2ff16fff74.png)
 
 
 
