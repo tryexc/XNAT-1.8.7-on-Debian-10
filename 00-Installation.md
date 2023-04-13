@@ -89,6 +89,8 @@ sudo nano /etc/systemd/system/tomcat.service
 
 Use the following definitions:
 
+In my case it was necessary to include ```/opt/tomcat/latest/conf/Catalina/``` and ```/opt/tomcat/latest/work/Catalina/localhost/```. For this I had to generate these directories by hand. Otherwise I got error-messages in the ```catalina.out```.
+
 ```service 
 [Unit]
 Description=Tomcat 9.0 servlet container
